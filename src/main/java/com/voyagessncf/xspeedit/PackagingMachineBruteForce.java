@@ -32,6 +32,22 @@ public class PackagingMachineBruteForce {
 		return processPackaging(input, "", packOneProductInEachPack(input));
 	}
 
+	/**
+	 * recursively resolves the issue in a bruteforce mode The algorith is quite
+	 * simple : - we have a list of products to pack, a list of ongoing packs
+	 * and the previously found best solution - when entering the method, we
+	 * check if there are no more packs on the ongoing solution then on the
+	 * previous best solution. In this case, we stop be returning the previous
+	 * best solution. - if the list of products to pack is empty, then we
+	 * finished and return the ongoing solution - if there are still products to
+	 * pack, we take each product individualy, add it to the last pack or a new
+	 * pack if last pack can't handle it, and continue the recursion
+	 * 
+	 * @param productsLeftToPack
+	 * @param currentPackagingSolution
+	 * @param previousBestPackagingSolution
+	 * @return
+	 */
 	private String processPackaging(String productsLeftToPack, String currentPackagingSolution,
 			String previousBestPackagingSolution) {
 		String[] splitCurrentPackagingSolution = currentPackagingSolution.split("/");
@@ -59,19 +75,22 @@ public class PackagingMachineBruteForce {
 			// this is the list of products left to pack after this operation
 			String nextProductsLeftToPack = removeProductFromProductList(productsLeftToPack, currentProduct);
 
+			String productToAdd;
+
 			// if the product fits to the current pack
 			if (sum(currentPack + currentProduct) <= this.boxCapacity) {
 
 				// add the product to the currentPackagingSolution without slash
 				// (this means it's added to the last pack)
-				previousBestPackagingSolution = processPackaging(nextProductsLeftToPack,
-						currentPackagingSolution + currentProduct, previousBestPackagingSolution);
+				productToAdd = currentProduct;
 			} else {
 				// "close" the previous pack, and create the next one with the
 				// current Product
-				previousBestPackagingSolution = processPackaging(nextProductsLeftToPack,
-						currentPackagingSolution + "/" + currentProduct, previousBestPackagingSolution);
+				productToAdd = "/" + currentProduct;
 			}
+
+			previousBestPackagingSolution = processPackaging(nextProductsLeftToPack,
+					currentPackagingSolution + productToAdd, previousBestPackagingSolution);
 		}
 		return previousBestPackagingSolution;
 	}
